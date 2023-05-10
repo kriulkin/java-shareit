@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.item.storage;
 
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.item.model.Item;
@@ -60,11 +60,6 @@ public class InMemoryItemStorage implements ItemStorage {
         }
 
         return currentItem;
-    }
-
-    @Override
-    public Item delete(long id) {
-        return null;
     }
 
     @Override

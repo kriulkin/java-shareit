@@ -18,4 +18,13 @@ public class Item {
     String description;
     Boolean available;
     long userId;
+    Long requestId;
+
+    public Item(long id, String name, String description, Boolean available, long userId) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.available = available;
+        this.userId = userId;
+    }
 }

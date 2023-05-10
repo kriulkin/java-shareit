@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.item.storage;
 
 import ru.practicum.shareit.item.model.Item;
 
@@ -13,8 +13,6 @@ public interface ItemStorage {
     Item add(Item item);
 
     Item update(Item item);
-
-    Item delete(long id);
 
     List<Item> search(String term);
 }

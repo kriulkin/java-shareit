@@ -1,6 +1,7 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.user.storage;
 
 import org.springframework.stereotype.Repository;
+import ru.practicum.shareit.user.User;
 
 import java.util.HashMap;
 import java.util.List;

@@ -1,21 +1,27 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.user.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.AlreadyExistsException;
 import ru.practicum.shareit.exception.NoSuchEntityException;
+import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.mapper.UserMapper;
+import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserServiceImpl implements UserService {
     private final UserStorage userStorage;
 
+    @Override
     public List<User> findAll() {
         return userStorage.findAll();
     }
 
+    @Override
     public UserDto add(UserDto userDto) {
         User user = userStorage.add(UserMapper.toUser(userDto));
 
@@ -28,6 +34,7 @@ public class UserService {
         return UserMapper.toUserDto(user);
     }
 
+    @Override
     public UserDto get(long userId) {
         User user = userStorage.get(userId);
         if (user == null) {
@@ -37,6 +44,7 @@ public class UserService {
         return UserMapper.toUserDto(user);
     }
 
+    @Override
     public UserDto update(UserDto userDto) {
         User user = userStorage.get(userDto.getId());
 
@@ -55,6 +63,7 @@ public class UserService {
         return UserMapper.toUserDto(updatedUser);
     }
 
+    @Override
     public void delete(long userId) {
         if (userStorage.delete(userId) == null) {
             throw new NoSuchEntityException(String.format("Пользователь с id %d не сущестувует", userId));
