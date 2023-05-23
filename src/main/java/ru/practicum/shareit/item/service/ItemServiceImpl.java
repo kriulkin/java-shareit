@@ -78,7 +78,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto update(Long userId, ItemDto itemDto) {
+    public ItemDto update(long userId, ItemDto itemDto) {
         User user = userService.findById(userId);
 
         Item item = itemStorage.findById(itemDto.getId())
@@ -143,7 +143,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public CommentDto addComment(Long userId, long itemId, CommentDto commentDto) {
+    public CommentDto addComment(long userId, long itemId, CommentDto commentDto) {
         User user = userService.findById(userId);
         Item item = itemStorage.findById(itemId)
                 .orElseThrow(() -> new NoSuchEntityException(String.format("Вещь с id %d не сущестувует", itemId)));

@@ -14,11 +14,11 @@ public interface ItemService {
 
     ItemDto add(long userId, ItemDto itemDto);
 
-    ItemDto update(Long userId, ItemDto itemDto);
+    ItemDto update(long userId, ItemDto itemDto);
 
     List<ItemBookingDto> findByUserId(long userId);
 
     List<ItemDto> search(String term);
 
-    CommentDto addComment(Long userId, long itemId, CommentDto commentDto);
+    CommentDto addComment(long userId, long itemId, CommentDto commentDto);
 }
