@@ -23,9 +23,12 @@ public class ItemDto {
     @NotNull(message = "Вещь без статуса", groups = New.class)
     Boolean available;
 
-    public interface New {}
+    public interface New {
+    }
 
-    public interface Exist {}
+    public interface Exist {
+    }
 
-    public interface UpdateFields extends Exist {}
+    public interface UpdateFields extends Exist {
+    }
 }

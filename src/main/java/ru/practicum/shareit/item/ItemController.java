@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.ItemBookingDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 
@@ -20,9 +22,9 @@ public class ItemController {
     public final ItemService itemService;
 
     @GetMapping("/{itemId}")
-    public ItemDto getItemById(@RequestHeader("X-Sharer-User-Id") long userId,
-                               @PathVariable long itemId) {
-        return itemService.get(itemId);
+    public ItemBookingDto getItemById(@RequestHeader("X-Sharer-User-Id") long userId,
+                                      @PathVariable long itemId) {
+        return itemService.get(userId, itemId);
     }
 
     @PostMapping
@@ -41,7 +43,7 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> findByUserId(@RequestHeader("X-Sharer-User-Id") long userId) {
+    public List<ItemBookingDto> findByUserId(@RequestHeader("X-Sharer-User-Id") long userId) {
         log.info("Попытка получить список вещей пользователем с id = {}", userId);
         return itemService.findByUserId(userId);
     }
@@ -50,6 +52,14 @@ public class ItemController {
     public List<ItemDto> search(@RequestParam(name = "text") String term) {
         log.info("Попытка поиска вещей пользователем по строке \"{}\"", term);
         return itemService.search(term);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto addCommant(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                 @Validated @RequestBody CommentDto commentDto,
+                                 @PathVariable long itemId) {
+        log.info("Попытка оставить комментарий к вещи с id = {}", itemId);
+        return itemService.addComment(userId, itemId, commentDto);
     }
 }
 

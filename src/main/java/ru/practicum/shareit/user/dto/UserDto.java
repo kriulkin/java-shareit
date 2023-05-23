@@ -1,6 +1,9 @@
 package ru.practicum.shareit.user.dto;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
 
 import javax.validation.constraints.Email;
@@ -21,9 +24,12 @@ public class UserDto {
     @NotNull(message = "Пользователь с пустым Email", groups = New.class)
     String email;
 
-    public interface New {}
+    public interface New {
+    }
 
-    public interface Exist {}
+    public interface Exist {
+    }
 
-    public interface UpdateFields extends Exist {}
+    public interface UpdateFields extends Exist {
+    }
 }
