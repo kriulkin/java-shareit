@@ -40,8 +40,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto update(UserDto userDto) {
-        User user = userStorage.findById(userDto.getId()).
-                orElseThrow(() -> new NoSuchEntityException(String.format("Пользователь с id %d не сущестувует", userDto.getId())));
+        User user = userStorage.findById(userDto.getId())
+                .orElseThrow(() -> new NoSuchEntityException(String.format("Пользователь с id %d не сущестувует", userDto.getId())));
 
         User updatedUser = UserMapper.toUser(userDto);
 
@@ -58,8 +58,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(long userId) {
-        User user = userStorage.findById(userId).
-                orElseThrow(() -> new NoSuchEntityException(String.format("Пользователь с id %d не сущестувует", userId)));
+        User user = userStorage.findById(userId)
+                .orElseThrow(() -> new NoSuchEntityException(String.format("Пользователь с id %d не сущестувует", userId)));
 
         userStorage.delete(user);
     }
