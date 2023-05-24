@@ -32,21 +32,20 @@ import java.util.stream.Collectors;
 public class ItemServiceImpl implements ItemService {
     private final ItemStorage itemStorage;
     private final UserService userService;
-    // В задании сказано добавить в зависимость репозитории бронирований и комментов
     private final BookingStorage bookingStorage;
     private final CommentStorage commentStorage;
 
     @Override
     public Item findById(long itemId) {
         return itemStorage.findById(itemId)
-                .orElseThrow(() -> new NoSuchEntityException(String.format("Вещь с id %d не сущестувует", itemId)));
+                .orElseThrow(() -> new NoSuchEntityException(String.format("Item with id = %d  doesn't exist", itemId)));
     }
 
     @Override
     public ItemBookingDto get(long userId, long itemId) {
         User user = userService.findById(userId);
         Item item = itemStorage.findById(itemId)
-                .orElseThrow(() -> new NoSuchEntityException(String.format("Вещь с id %d не сущестувует", itemId)));
+                .orElseThrow(() -> new NoSuchEntityException(String.format("Item with id = %d  doesn't exist", itemId)));
 
         Booking lastBooking = null;
         Booking nextBooking = null;
@@ -54,8 +53,6 @@ public class ItemServiceImpl implements ItemService {
         if (item.getUser().equals(user)) {
             List<Booking> bookings = bookingStorage.findByItemAndItemUserAndStatusOrderByStartAsc(
                     item, user, Status.APPROVED);
-            System.out.println("BOOKINGS");
-            System.out.println(bookings);
             lastBooking = bookings.stream()
                     .filter(booking -> booking.getStart().isBefore(LocalDateTime.now()))
                     .max(Comparator.comparing(Booking::getStart))
@@ -82,11 +79,11 @@ public class ItemServiceImpl implements ItemService {
         User user = userService.findById(userId);
 
         Item item = itemStorage.findById(itemDto.getId())
-                .orElseThrow(() -> new NoSuchEntityException(String.format("Вещь с id %d не сущестувует", itemDto.getId())));
+                .orElseThrow(() -> new NoSuchEntityException(String.format("Item with id = %d  doesn't exist", itemDto.getId())));
 
         if (userId != item.getUser().getId()) {
             throw new NoSuchEntityException(
-                    String.format("У пользователя с id %d нет вещи с id %d не сущестувует", userId, item.getId())
+                    String.format("User with id = %d  doesn't have item with id = %d", userId, item.getId())
             );
         }
 
@@ -146,17 +143,17 @@ public class ItemServiceImpl implements ItemService {
     public CommentDto addComment(long userId, long itemId, CommentDto commentDto) {
         User user = userService.findById(userId);
         Item item = itemStorage.findById(itemId)
-                .orElseThrow(() -> new NoSuchEntityException(String.format("Вещь с id %d не сущестувует", itemId)));
+                .orElseThrow(() -> new NoSuchEntityException(String.format("Item with id = %d  doesn't exist", itemId)));
 
         if (!bookingStorage.existsByItemAndBookerAndStatusAndEndBefore(item, user, Status.APPROVED, LocalDateTime.now())) {
             throw new NotAvailableException(
-                    String.format("Пользователь с id = %d еще не брал вещь с id = %d в ползование", userId, itemId)
+                    String.format("User with id = %d  hadn't booked item with id = %d", userId, itemId)
             );
         }
 
         if (commentStorage.existsByItemAndAuthor(item, user)) {
             throw new NotAvailableException(
-                    String.format("Пользователь с id = %d уже оставил комментарий для вещи с id = %d", userId, itemId)
+                    String.format("User with id = %d already has posted item with id = %d", userId, itemId)
             );
         }
 

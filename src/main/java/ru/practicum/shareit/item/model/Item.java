@@ -36,7 +36,6 @@ public class Item {
     @ToString.Exclude
     User user;
 
-    @Column(name = "request_id")
     Long requestId;
 
     public Item(long id, String name, String description, Boolean available, User user) {

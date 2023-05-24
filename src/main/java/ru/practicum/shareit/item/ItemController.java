@@ -37,20 +37,20 @@ public class ItemController {
     public ItemDto update(@RequestHeader("X-Sharer-User-Id") Long userId,
                           @Validated(ItemDto.UpdateFields.class) @RequestBody ItemDto itemDto,
                           @PathVariable long itemId) {
-        log.info("Попытка обновить вещь с id = {} пользователем с id = {}", itemId, userId);
+        log.info("User with id = {} trying to update item with id = {}", itemId, userId);
         itemDto.setId(itemId);
         return itemService.update(userId, itemDto);
     }
 
     @GetMapping
     public List<ItemBookingDto> findByUserId(@RequestHeader("X-Sharer-User-Id") long userId) {
-        log.info("Попытка получить список вещей пользователем с id = {}", userId);
+        log.info("User with id = {} trying to fetch item list", userId);
         return itemService.findByUserId(userId);
     }
 
     @GetMapping("/search")
     public List<ItemDto> search(@RequestParam(name = "text") String term) {
-        log.info("Попытка поиска вещей пользователем по строке \"{}\"", term);
+        log.info("User trying to search items by term \"{}\"", term);
         return itemService.search(term);
     }
 
@@ -58,7 +58,7 @@ public class ItemController {
     public CommentDto addCommant(@RequestHeader("X-Sharer-User-Id") Long userId,
                                  @Validated @RequestBody CommentDto commentDto,
                                  @PathVariable long itemId) {
-        log.info("Попытка оставить комментарий к вещи с id = {}", itemId);
+        log.info("User trying to post comment to item with с id = {}", itemId);
         return itemService.addComment(userId, itemId, commentDto);
     }
 }

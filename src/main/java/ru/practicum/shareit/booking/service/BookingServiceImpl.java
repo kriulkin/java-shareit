@@ -37,20 +37,20 @@ public class BookingServiceImpl implements BookingService {
 
         if (item.getUser().equals(user)) {
             throw new NoSuchEntityException(
-                    String.format("Пользователь с id = %d попытался забронировать свою вещь с id = %d",
+                    String.format("User with id = %d trying to book own item with id = %d",
                             userId, item.getId())
             );
         }
 
         if (!item.getAvailable()) {
             throw new NotAvailableException(
-                    String.format("Пользователь с id = %d попытался забронировать недоступную вещь с id = %d",
+                    String.format("User with id = %d trying to book unavailable item with id = %d",
                             userId, item.getId())
             );
         }
 
         if (!newBookingDto.getStart().isBefore(newBookingDto.getEnd())) {
-            throw new NotAvailableException("Дата начала бронирования должна быть реньше даты завершения");
+            throw new NotAvailableException("Start date of booking must be before end date");
         }
 
         Booking newBooking = bookingStorage.save(BookingMapper.toBooking(newBookingDto, user, item));
@@ -61,17 +61,17 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto updateStatus(Long userId, long bookingId, boolean approved) {
 
         Booking booking = bookingStorage.findById(bookingId)
-                .orElseThrow(() -> new NoSuchEntityException(String.format("Бронирования с id %d не сущестувует", bookingId)));
+                .orElseThrow(() -> new NoSuchEntityException(String.format("Booking with id %d doesn't exist", bookingId)));
 
         User user = userService.findById(userId);
 
         if (!booking.getItem().getUser().equals(user)) {
-            throw new NoSuchEntityException(String.format("У пользователя с id = %d нет вещи с id = %d", userId, bookingId));
+            throw new NoSuchEntityException(String.format("User with id = %d doesn't own item with id = %d", userId, bookingId));
         }
 
         if (!booking.getStatus().equals(Status.WAITING)) {
             throw new NotAvailableException(
-                    String.format("Пользователь с id = %d попытался обновить статус для бронирования с id = %d",
+                    String.format("User with id = %d trying to book item with id = %d once more time",
                             userId, bookingId)
             );
         }
@@ -89,11 +89,11 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto get(long userId, long bookingId) {
 
         Booking booking = bookingStorage.findById(bookingId)
-                .orElseThrow(() -> new NoSuchEntityException(String.format("Бронирования с id %d не сущестувует", bookingId)));
+                .orElseThrow(() -> new NoSuchEntityException(String.format("Booking with id %d doesn't exist", bookingId)));
 
         User user = userService.findById(userId);
         if (!booking.getItem().getUser().equals(user) && !booking.getBooker().equals(user)) {
-            throw new NoSuchEntityException(String.format("Пользователь с id = %d не владеет и не бронирует вещь с id = %d",
+            throw new NoSuchEntityException(String.format("User with id = %d doesn't own and hasn't booked item with id = %d",
                     userId, booking.getItem().getId()));
         }
 
@@ -200,4 +200,3 @@ public class BookingServiceImpl implements BookingService {
                 .collect(Collectors.toList());
     }
 }
-

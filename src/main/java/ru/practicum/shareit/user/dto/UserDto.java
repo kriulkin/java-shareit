@@ -20,8 +20,8 @@ public class UserDto {
     Long id;
     String name;
     @EqualsAndHashCode.Include
-    @Email(message = "Пользователь с невалидным Email", groups = {New.class, UpdateFields.class})
-    @NotNull(message = "Пользователь с пустым Email", groups = New.class)
+    @Email(message = "User with incorrect email", groups = {New.class, UpdateFields.class})
+    @NotNull(message = "User with empty email", groups = New.class)
     String email;
 
     public interface New {

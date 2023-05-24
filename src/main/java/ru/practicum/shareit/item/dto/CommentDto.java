@@ -15,8 +15,8 @@ import java.time.LocalDateTime;
 public class CommentDto {
     long id;
 
-    @NotBlank(message = "Комментарий с без текста")
-    @NotNull(message = "Комментарий с без текста")
+    @NotBlank(message = "Comment with empty text")
+    @NotNull(message = "Comment with empty text")
     String text;
 
     String authorName;

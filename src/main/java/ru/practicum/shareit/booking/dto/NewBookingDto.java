@@ -17,14 +17,14 @@ import java.time.LocalDateTime;
 public class NewBookingDto {
     long id;
 
-    @NotNull(message = "Бронирование с пустым идентификатором вещи")
+    @NotNull(message = "Booking with empty item id")
     long itemId;
 
-    @Future(message = "Бронирование с некрректной датой начала")
-    @NotNull(message = "Бронирование с пустой датой начала")
+    @Future(message = "Booking with incorrect start date")
+    @NotNull(message = "Booking with empty start date")
     LocalDateTime start;
 
-    @Future(message = "Бронирование с некрректной датой завершения")
-    @NotNull(message = "Бронирование с пустой датой завершения")
+    @Future(message = "Booking with incorrect end date")
+    @NotNull(message = "Booking with empty end date")
     LocalDateTime end;
 }

@@ -23,17 +23,17 @@ public class BookingController {
 
     @PostMapping
     public BookingDto add(@RequestHeader("X-Sharer-User-Id") long userId,
-                          @Validated @RequestBody NewBookingDto newbookingDto) {
-        log.info("Пользователь с id = {} пытается забронировать вещь с id = {}", userId, newbookingDto.getItemId());
+                          @Validated @RequestBody NewBookingDto newBookingDto) {
+        log.info("User with id = {} trying to book item with id = {}", userId, newBookingDto.getItemId());
 
-        return bookingService.add(userId, newbookingDto);
+        return bookingService.add(userId, newBookingDto);
     }
 
     @PatchMapping("/{bookingId}")
     public BookingDto updateStatus(@RequestHeader("X-Sharer-User-Id") long userId,
                                    @PathVariable long bookingId,
                                    @RequestParam boolean approved) {
-        log.info("Пользователь с id = {} пытается обновить статус бронирования id = {}", userId, bookingId);
+        log.info("User with id = {} trying to update status of of booking with id = {}}", userId, bookingId);
 
         return bookingService.updateStatus(userId, bookingId, approved);
     }
@@ -41,14 +41,14 @@ public class BookingController {
     @GetMapping("/{bookingId}")
     public BookingDto get(@RequestHeader("X-Sharer-User-Id") long userId,
                           @PathVariable long bookingId) {
-        log.info("Пользователь с id = {} пытается получить броинрование с id = {}", userId, bookingId);
+        log.info("User with id = {} trying to fetch booking with id = {}", userId, bookingId);
         return bookingService.get(userId, bookingId);
     }
 
     @GetMapping
     public List<BookingDto> getByBookerId(@RequestHeader("X-Sharer-User-Id") long userId,
                                           @RequestParam(defaultValue = "ALL", required = false) String state) {
-        log.info("Пользователь с id = {} пытается получить список своих броинрований с состоянием = {}",
+        log.info("User with id = {} trying to fetch list of own bookings with status = {}",
                 userId, state);
         return bookingService.getByBookerId(userId, state);
     }
@@ -56,7 +56,7 @@ public class BookingController {
     @GetMapping("/owner")
     public List<BookingDto> getByOwnerId(@RequestHeader("X-Sharer-User-Id") long userId,
                                          @RequestParam(defaultValue = "ALL", required = false) String state) {
-        log.info("Пользователь с id = {} пытается получить список своих броинрований с состоянием = {}",
+        log.info("User with id = {} trying to fetch list of bookings of his own items with status = {}",
                 userId, state);
         return bookingService.getByOwnerId(userId, state);
     }

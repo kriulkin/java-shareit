@@ -16,11 +16,11 @@ import javax.validation.constraints.NotNull;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ItemDto {
     long id;
-    @NotBlank(message = "Вещь с пустым названием", groups = New.class)
+    @NotBlank(message = "Item with empty name", groups = New.class)
     String name;
-    @NotBlank(message = "Вещь с пустым описанием", groups = New.class)
+    @NotBlank(message = "Item with empty description", groups = New.class)
     String description;
-    @NotNull(message = "Вещь без статуса", groups = New.class)
+    @NotNull(message = "Item with empty status", groups = New.class)
     Boolean available;
 
     public interface New {
