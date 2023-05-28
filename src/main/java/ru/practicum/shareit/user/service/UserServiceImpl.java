@@ -2,7 +2,6 @@ package ru.practicum.shareit.user.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.AlreadyExistsException;
 import ru.practicum.shareit.exception.NoSuchEntityException;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -22,51 +21,46 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto add(UserDto userDto) {
-        User user = userStorage.add(UserMapper.toUser(userDto));
+    public User findById(long userId) {
+        return userStorage.findById(userId)
+                .orElseThrow(() -> new NoSuchEntityException(String.format("User with id = %d doesn't exist", userId)));
+    }
 
-        if (user == null) {
-            throw new AlreadyExistsException(
-                    String.format("Пользватель с email %s уже существует", userDto.getEmail())
-            );
-        }
+    @Override
+    public UserDto add(UserDto userDto) {
+        User user = userStorage.save(UserMapper.toUser(userDto));
 
         return UserMapper.toUserDto(user);
     }
 
     @Override
     public UserDto get(long userId) {
-        User user = userStorage.get(userId);
-        if (user == null) {
-            throw new NoSuchEntityException(String.format("Пользователь с id %d не сущестувует", userId));
-        }
-
-        return UserMapper.toUserDto(user);
+        return UserMapper.toUserDto(findById(userId));
     }
 
     @Override
     public UserDto update(UserDto userDto) {
-        User user = userStorage.get(userDto.getId());
+        User user = userStorage.findById(userDto.getId())
+                .orElseThrow(() -> new NoSuchEntityException(String.format("User with id = %d doesn't exist", userDto.getId())));
 
-        if (user == null) {
-            throw new NoSuchEntityException(String.format("Пользователь с id %d не сущестувует", userDto.getId()));
+        User updatedUser = UserMapper.toUser(userDto);
+
+        if (updatedUser.getEmail() == null || updatedUser.getEmail().isBlank()) {
+            updatedUser.setEmail(user.getEmail());
         }
 
-        User updatedUser = userStorage.update(UserMapper.toUser(userDto));
-
-        if (updatedUser == null) {
-            throw new AlreadyExistsException(
-                    String.format("Пользватель с email %s уже существует", userDto.getEmail())
-            );
+        if (updatedUser.getName() == null || updatedUser.getName().isBlank()) {
+            updatedUser.setName(user.getName());
         }
 
-        return UserMapper.toUserDto(updatedUser);
+        return UserMapper.toUserDto(userStorage.save(updatedUser));
     }
 
     @Override
     public void delete(long userId) {
-        if (userStorage.delete(userId) == null) {
-            throw new NoSuchEntityException(String.format("Пользователь с id %d не сущестувует", userId));
-        }
+        User user = userStorage.findById(userId)
+                .orElseThrow(() -> new NoSuchEntityException(String.format("User with id = %d doesn't exist", userId)));
+
+        userStorage.delete(user);
     }
 }

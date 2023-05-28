@@ -18,6 +18,13 @@ public class ErrorHandler {
         return new ErrorResponse(e.getMessage());
     }
 
+    @ExceptionHandler(value = NotAvailableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handle(final NotAvailableException e) {
+        log.error(String.format("Error: %s", e.getMessage()));
+        return new ErrorResponse(e.getMessage());
+    }
+
     @ExceptionHandler(value = AlreadyExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handle(final AlreadyExistsException e) {

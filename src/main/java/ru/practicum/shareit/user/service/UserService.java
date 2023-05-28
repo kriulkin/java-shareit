@@ -8,6 +8,8 @@ import java.util.List;
 public interface UserService {
     List<User> findAll();
 
+    User findById(long userId);
+
     UserDto add(UserDto userDto);
 
     UserDto get(long userId);

@@ -21,33 +21,33 @@ public class UserController {
 
     @GetMapping
     public Collection<User> findAll() {
-        log.info("Текущее количество пользователей {}", userService.findAll().size());
+        log.info("Users amount is {}", userService.findAll().size());
         return userService.findAll();
     }
 
     @PostMapping
     public UserDto add(@Validated(UserDto.New.class) @RequestBody UserDto userDto) {
-        log.info("Попытка добавить пользователя");
+        log.info("Trying to create new user");
         return userService.add(userDto);
     }
 
     @GetMapping("/{userId}")
     public UserDto get(@PathVariable long userId) {
-        log.info("Попытка получить пользователя с id = {}", userId);
+        log.info("Trying to fetch user with id = {}", userId);
         return userService.get(userId);
     }
 
     @PatchMapping("/{userId}")
     public UserDto update(@PathVariable long userId,
                           @Validated(UserDto.UpdateFields.class) @RequestBody UserDto userDto) {
-        log.info("Попытка обновить пользователя с id = {}", userId);
+        log.info("Trying to update user with id = {}", userId);
         userDto.setId(userId);
         return userService.update(userDto);
     }
 
     @DeleteMapping("/{userId}")
     public void delete(@PathVariable long userId) {
-        log.info("Попытка удалить пользователя с id = {}", userId);
+        log.info("Trying to delete user with id = {}", userId);
         userService.delete(userId);
     }
 }
