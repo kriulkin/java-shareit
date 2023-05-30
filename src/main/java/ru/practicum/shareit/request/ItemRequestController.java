@@ -24,6 +24,7 @@ import java.util.List;
 public class ItemRequestController {
 
     public final ItemRequestService itemRequestService;
+
     @PostMapping
     public ItemRequestDto add(@RequestHeader("X-Sharer-User-Id") long userId,
                               @Validated @RequestBody NewItemRequestDto itemRequestDto) {
@@ -32,22 +33,22 @@ public class ItemRequestController {
     }
 
     @GetMapping
-    public List<AnsweredItemRequestDto> findByUserId(@RequestHeader("X-Sharer-User-Id") long userId){
+    public List<AnsweredItemRequestDto> findByUserId(@RequestHeader("X-Sharer-User-Id") long userId) {
         log.info("User with id = {} trying to fetch list of own item requests", userId);
         return itemRequestService.findByUserId(userId);
     }
 
     @GetMapping("/all")
     public List<AnsweredItemRequestDto> findAllButNotUserId(@RequestHeader("X-Sharer-User-Id") long userId,
-                                                    @RequestParam(defaultValue = "0", required = false) @PositiveOrZero int from,
-                                                    @RequestParam(defaultValue = "25", required = false) @Positive int size) {
+                                                            @RequestParam(defaultValue = "0", required = false) @PositiveOrZero int from,
+                                                            @RequestParam(defaultValue = "25", required = false) @Positive int size) {
         log.info("User with id = {} trying to fetch list of item requests", userId);
         return itemRequestService.findAllButNotUserId(userId, from, size);
     }
 
     @GetMapping("/{requestId}")
     public AnsweredItemRequestDto get(@RequestHeader("X-Sharer-User-Id") long userId,
-                              @PathVariable long requestId) {
+                                      @PathVariable long requestId) {
         log.info("User with id = {} trying to fetch item request with id = {} ", userId, requestId);
         return itemRequestService.get(userId, requestId);
     }

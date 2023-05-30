@@ -17,7 +17,7 @@ public class CommentMapper {
 
     public static Comment toComment(CommentDto commentDto, User user, Item item) {
         return new Comment(
-                commentDto.getId(),
+                0,
                 commentDto.getText(),
                 item,
                 user,

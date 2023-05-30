@@ -9,7 +9,7 @@ import java.util.List;
 public interface ItemRequestService {
 
     ItemRequestDto add(long userId, NewItemRequestDto itemRequestDto);
-    
+
     List<AnsweredItemRequestDto> findByUserId(long userId);
 
     List<AnsweredItemRequestDto> findAllButNotUserId(long userId, int from, int size);
