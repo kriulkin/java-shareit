@@ -1,6 +1,7 @@
 package ru.practicum.shareit.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import javax.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -11,9 +12,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ErrorHandler {
 
-    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    @ExceptionHandler(value = {MethodArgumentNotValidException.class, ConstraintViolationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handle(final MethodArgumentNotValidException e) {
+    public ErrorResponse handle(final Exception e) {
         log.error(String.format("Error: %s", e.getMessage()));
         return new ErrorResponse(e.getMessage());
     }

@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingState;
@@ -17,7 +18,6 @@ import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -101,44 +101,49 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getByBookerId(long userId, String state) {
+    public List<BookingDto> getByBookerId(long userId, String state, int from, int size) {
         User user = userService.findById(userId);
-        List<Booking> bookings = new ArrayList<>();
+        Sort sort = Sort.by(Sort.Direction.DESC, "start");
+        Pageable page = PageRequest.of(from / size, size, sort);
+        Page<Booking> bookings = Page.empty();
 
         try {
             switch (BookingState.valueOf(state)) {
                 case ALL:
-                    bookings = bookingStorage.findByBookerIdOrderByStartDesc(userId);
+                    bookings = bookingStorage.findByBookerIdOrderByStartDesc(userId, page);
                     break;
 
                 case CURRENT:
                     bookings = bookingStorage.findByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(
                             userId,
                             LocalDateTime.now(),
-                            LocalDateTime.now()
+                            LocalDateTime.now(),
+                            page
                     );
                     break;
 
                 case PAST:
                     bookings = bookingStorage.findByBookerIdAndEndBeforeOrderByStartDesc(
                             userId,
-                            LocalDateTime.now()
+                            LocalDateTime.now(),
+                            page
                     );
                     break;
 
                 case FUTURE:
                     bookings = bookingStorage.findByBookerIdAndStartAfterOrderByStartDesc(
                             userId,
-                            LocalDateTime.now()
+                            LocalDateTime.now(),
+                            page
                     );
                     break;
 
                 case WAITING:
-                    bookings = bookingStorage.findByBookerIdAndStatusOrderByStartDesc(userId, Status.WAITING);
+                    bookings = bookingStorage.findByBookerIdAndStatusOrderByStartDesc(userId, Status.WAITING, page);
                     break;
 
                 case REJECTED:
-                    bookings = bookingStorage.findByBookerIdAndStatusOrderByStartDesc(userId, Status.REJECTED);
+                    bookings = bookingStorage.findByBookerIdAndStatusOrderByStartDesc(userId, Status.REJECTED, page);
                     break;
             }
         } catch (IllegalArgumentException e) {
@@ -151,51 +156,56 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getByOwnerId(long userId, String state) {
+    public List<BookingDto> getByOwnerId(long userId, String state, int from, int size) {
         User user = userService.findById(userId);
-        List<Booking> bookings = new ArrayList<>();
+        Sort sort = Sort.by(Sort.Direction.DESC, "start");
+        Pageable page = PageRequest.of(from / size, size, sort);
+        Page<Booking> bookings = Page.empty();
 
         try {
             switch (BookingState.valueOf(state)) {
                 case ALL:
-                    bookings = bookingStorage.findByItemUserOrderByStartDesc(user);
+                    bookings = bookingStorage.findByItemUserOrderByStartDesc(user, page);
                     break;
 
                 case CURRENT:
                     bookings = bookingStorage.findByItemUserAndStartBeforeAndEndAfterOrderByStartDesc(
                             user,
                             LocalDateTime.now(),
-                            LocalDateTime.now()
+                            LocalDateTime.now(),
+                            page
                     );
                     break;
 
                 case PAST:
                     bookings = bookingStorage.findByItemUserAndEndBeforeOrderByStartDesc(
                             user,
-                            LocalDateTime.now()
+                            LocalDateTime.now(),
+                            page
                     );
                     break;
 
                 case FUTURE:
                     bookings = bookingStorage.findByItemUserAndStartAfterOrderByStartDesc(
                             user,
-                            LocalDateTime.now()
+                            LocalDateTime.now(),
+                            page
                     );
                     break;
 
                 case WAITING:
-                    bookings = bookingStorage.findByItemUserAndStatusOrderByStartDesc(user, Status.WAITING);
+                    bookings = bookingStorage.findByItemUserAndStatusOrderByStartDesc(user, Status.WAITING, page);
                     break;
 
                 case REJECTED:
-                    bookings = bookingStorage.findByItemUserAndStatusOrderByStartDesc(user, Status.REJECTED);
+                    bookings = bookingStorage.findByItemUserAndStatusOrderByStartDesc(user, Status.REJECTED, page);
                     break;
             }
         } catch (IllegalArgumentException e) {
             throw new NotAvailableException("Unknown state: UNSUPPORTED_STATUS");
         }
 
-        return bookings.stream()
+        return bookings.getContent().stream()
                 .map(BookingMapper::toBookingDto)
                 .collect(Collectors.toList());
     }

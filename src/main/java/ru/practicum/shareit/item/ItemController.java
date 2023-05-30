@@ -9,6 +9,8 @@ import ru.practicum.shareit.item.dto.ItemBookingDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 /**
@@ -18,6 +20,7 @@ import java.util.List;
 @RequestMapping("/items")
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 public class ItemController {
     public final ItemService itemService;
 
@@ -43,15 +46,19 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemBookingDto> findByUserId(@RequestHeader("X-Sharer-User-Id") long userId) {
+    public List<ItemBookingDto> findByUserId(@RequestHeader("X-Sharer-User-Id") long userId,
+                                             @RequestParam(defaultValue = "0", required = false) @PositiveOrZero int from,
+                                             @RequestParam(defaultValue = "25", required = false) @Positive int size) {
         log.info("User with id = {} trying to fetch item list", userId);
-        return itemService.findByUserId(userId);
+        return itemService.findByUserId(userId, from, size);
     }
 
     @GetMapping("/search")
-    public List<ItemDto> search(@RequestParam(name = "text") String term) {
+    public List<ItemDto> search(@RequestParam(name = "text") String term,
+                                @RequestParam(defaultValue = "0", required = false) @PositiveOrZero int from,
+                                @RequestParam(defaultValue = "25", required = false) @Positive int size) {
         log.info("User trying to search items by term \"{}\"", term);
-        return itemService.search(term);
+        return itemService.search(term, from, size);
     }
 
     @PostMapping("/{itemId}/comment")
