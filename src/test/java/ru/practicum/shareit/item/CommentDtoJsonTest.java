@@ -36,7 +36,7 @@ public class CommentDtoJsonTest {
         assertThat(result).extractingJsonPathStringValue("$.authorName").isEqualTo("Ivan");
         assertThat(result).extractingJsonPathStringValue("$.created").isEqualTo("2023-01-01T12:00:00");
     }
-    
+
     @SneakyThrows
     @Test
     void toCommentDtoTest() {
@@ -46,9 +46,9 @@ public class CommentDtoJsonTest {
                 "Ivan",
                 LocalDateTime.parse("2023-01-01T12:00:00")
         );
-        
+
         String jsonString = "{\"id\":0,\"text\":\"comment\",\"authorName\":\"Ivan\",\"created\":\"2023-01-01T12:00:00\"}";
-        
+
         CommentDto fromJson = json.parseObject(jsonString);
 
         assertEquals(fromJson.getId(), commentDto.getId());
