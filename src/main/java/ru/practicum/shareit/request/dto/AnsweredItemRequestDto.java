@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AnsweredItemRequestDto {
-    long id;
+    Long id;
     String description;
     LocalDateTime created;
     List<ItemDto> items;

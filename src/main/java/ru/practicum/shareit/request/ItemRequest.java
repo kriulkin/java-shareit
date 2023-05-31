@@ -23,7 +23,7 @@ public class ItemRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    long id;
+    Long id;
 
     @Column
     String description;
