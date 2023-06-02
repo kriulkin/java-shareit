@@ -19,8 +19,8 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.CommentStorage;
 import ru.practicum.shareit.item.storage.ItemStorage;
-import ru.practicum.shareit.request.ItemRequest;
-import ru.practicum.shareit.request.ItemRequestStorage;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.storage.ItemRequestStorage;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.service.UserService;
@@ -82,7 +82,12 @@ public class ItemServiceImpl implements ItemService {
         if (itemDto.getRequestId() == null) {
             request = null;
         } else {
-            request = requestStorage.getById(itemDto.getRequestId());
+            request = requestStorage.findById(itemDto.getRequestId())
+                    .orElseThrow(
+                            () -> new NoSuchEntityException(
+                                    String.format("No such item request with id = %d", itemDto.getRequestId())
+                            )
+                    );
         }
         return ItemMapper.toItemDto(itemStorage.save(ItemMapper.toItem(userService.findById(userId), itemDto, request)));
     }
@@ -100,11 +105,11 @@ public class ItemServiceImpl implements ItemService {
             );
         }
 
-        if (itemDto.getName() != null && ! itemDto.getName().isBlank()) {
+        if (itemDto.getName() != null && !itemDto.getName().isBlank()) {
             item.setName(itemDto.getName());
         }
 
-        if (itemDto.getDescription() != null && ! itemDto.getDescription().isBlank()) {
+        if (itemDto.getDescription() != null && !itemDto.getDescription().isBlank()) {
             item.setDescription(itemDto.getDescription());
         }
 
