@@ -145,7 +145,7 @@ public class ItemServiceTest {
 
         when(userService.findById(anyLong())).thenReturn(user);
         when(itemStorage.save(any())).thenReturn(item);
-        when(requestStorage.getById(anyLong())).thenReturn(request);
+        when(requestStorage.findById(anyLong())).thenReturn(Optional.of(request));
 
         ItemDto expectedItemDto = itemService.add(user.getId(), itemDto);
 
