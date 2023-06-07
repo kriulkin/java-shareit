@@ -12,7 +12,7 @@ public interface BookingService {
 
     BookingDto get(long userId, long bookingId);
 
-    List<BookingDto> getByBookerId(long userId, String state);
+    List<BookingDto> getByBookerId(long userId, String state, int from, int size);
 
-    List<BookingDto> getByOwnerId(long userId, String state);
+    List<BookingDto> getByOwnerId(long userId, String state, int from, int size);
 }

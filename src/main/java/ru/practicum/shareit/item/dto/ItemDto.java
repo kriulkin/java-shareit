@@ -22,6 +22,7 @@ public class ItemDto {
     String description;
     @NotNull(message = "Item with empty status", groups = New.class)
     Boolean available;
+    Long requestId;
 
     public interface New {
     }

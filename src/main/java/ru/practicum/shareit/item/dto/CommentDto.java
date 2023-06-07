@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CommentDto {
-    long id;
+    Long id;
 
     @NotBlank(message = "Comment with empty text")
     @NotNull(message = "Comment with empty text")

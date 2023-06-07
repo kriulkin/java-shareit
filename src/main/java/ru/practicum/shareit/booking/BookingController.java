@@ -8,6 +8,8 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.NewBookingDto;
 import ru.practicum.shareit.booking.service.BookingService;
 
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 /**
@@ -17,6 +19,7 @@ import java.util.List;
 @RequestMapping(path = "/bookings")
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 public class BookingController {
 
     private final BookingService bookingService;
@@ -47,17 +50,21 @@ public class BookingController {
 
     @GetMapping
     public List<BookingDto> getByBookerId(@RequestHeader("X-Sharer-User-Id") long userId,
-                                          @RequestParam(defaultValue = "ALL", required = false) String state) {
+                                          @RequestParam(defaultValue = "ALL", required = false) String state,
+                                          @RequestParam(defaultValue = "0", required = false) @PositiveOrZero int from,
+                                          @RequestParam(defaultValue = "25", required = false) @Positive int size) {
         log.info("User with id = {} trying to fetch list of own bookings with status = {}",
                 userId, state);
-        return bookingService.getByBookerId(userId, state);
+        return bookingService.getByBookerId(userId, state, from, size);
     }
 
     @GetMapping("/owner")
     public List<BookingDto> getByOwnerId(@RequestHeader("X-Sharer-User-Id") long userId,
-                                         @RequestParam(defaultValue = "ALL", required = false) String state) {
+                                         @RequestParam(defaultValue = "ALL", required = false) String state,
+                                         @RequestParam(defaultValue = "0", required = false) @PositiveOrZero int from,
+                                         @RequestParam(defaultValue = "25", required = false) @Positive int size) {
         log.info("User with id = {} trying to fetch list of bookings of his own items with status = {}",
                 userId, state);
-        return bookingService.getByOwnerId(userId, state);
+        return bookingService.getByOwnerId(userId, state, from, size);
     }
 }

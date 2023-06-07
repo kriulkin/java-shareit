@@ -1,6 +1,9 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.Status;
@@ -16,6 +19,8 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.CommentStorage;
 import ru.practicum.shareit.item.storage.ItemStorage;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.storage.ItemRequestStorage;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.service.UserService;
@@ -34,6 +39,7 @@ public class ItemServiceImpl implements ItemService {
     private final UserService userService;
     private final BookingStorage bookingStorage;
     private final CommentStorage commentStorage;
+    private final ItemRequestStorage requestStorage;
 
     @Override
     public Item findById(long itemId) {
@@ -71,7 +77,19 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto add(long userId, ItemDto itemDto) {
-        return ItemMapper.toItemDto(itemStorage.save(ItemMapper.toItem(userService.findById(userId), itemDto)));
+        User user = userService.findById(userId);
+        ItemRequest request;
+        if (itemDto.getRequestId() == null) {
+            request = null;
+        } else {
+            request = requestStorage.findById(itemDto.getRequestId())
+                    .orElseThrow(
+                            () -> new NoSuchEntityException(
+                                    String.format("No such item request with id = %d", itemDto.getRequestId())
+                            )
+                    );
+        }
+        return ItemMapper.toItemDto(itemStorage.save(ItemMapper.toItem(userService.findById(userId), itemDto, request)));
     }
 
     @Override
@@ -87,29 +105,28 @@ public class ItemServiceImpl implements ItemService {
             );
         }
 
-        Item updatedItem = ItemMapper.toItem(user, itemDto);
-
-        if (updatedItem.getName() == null || updatedItem.getName().isBlank()) {
-            updatedItem.setName(item.getName());
+        if (itemDto.getName() != null && !itemDto.getName().isBlank()) {
+            item.setName(itemDto.getName());
         }
 
-        if (updatedItem.getDescription() == null || updatedItem.getDescription().isBlank()) {
-            updatedItem.setDescription(item.getDescription());
+        if (itemDto.getDescription() != null && !itemDto.getDescription().isBlank()) {
+            item.setDescription(itemDto.getDescription());
         }
 
-        if (updatedItem.getAvailable() == null) {
-            updatedItem.setAvailable(item.getAvailable());
+        if (itemDto.getAvailable() != null) {
+            item.setAvailable(itemDto.getAvailable());
         }
 
-        return ItemMapper.toItemDto(itemStorage.save(updatedItem));
+        return ItemMapper.toItemDto(itemStorage.save(item));
 
     }
 
     @Override
-    public List<ItemBookingDto> findByUserId(long userId) {
+    public List<ItemBookingDto> findByUserId(long userId, int from, int size) {
         User user = UserMapper.toUser(userService.get(userId));
-        List<Item> items = itemStorage.findByUser(user);
         List<ItemBookingDto> itemDtos = new ArrayList<>();
+        Pageable page = PageRequest.of(from / size, size);
+        Page<Item> items = itemStorage.findByUser(user, page);
 
         for (Item item : items) {
             List<Booking> bookings = bookingStorage.findByItemAndItemUserAndStatusOrderByStartAsc(
@@ -129,12 +146,14 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> search(String term) {
+    public List<ItemDto> search(String term, int from, int size) {
+        Pageable page = PageRequest.of(from / size, size);
+
         if (term == null || term.isBlank()) {
             return Collections.emptyList();
         }
 
-        return itemStorage.search(term).stream()
+        return itemStorage.search(term, page).getContent().stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
@@ -147,7 +166,7 @@ public class ItemServiceImpl implements ItemService {
 
         if (!bookingStorage.existsByItemAndBookerAndStatusAndEndBefore(item, user, Status.APPROVED, LocalDateTime.now())) {
             throw new NotAvailableException(
-                    String.format("User with id = %d  hadn't booked item with id = %d", userId, itemId)
+                    String.format("User with id = %d hadn't booked item with id = %d", userId, itemId)
             );
         }
 
@@ -160,6 +179,5 @@ public class ItemServiceImpl implements ItemService {
         Comment comment = CommentMapper.toComment(commentDto, user, item);
         comment.setCreated(LocalDateTime.now());
         return CommentMapper.toCommentDto(commentStorage.save(comment));
-
     }
 }
