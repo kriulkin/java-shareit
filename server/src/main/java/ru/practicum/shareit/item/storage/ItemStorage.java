@@ -11,7 +11,7 @@ import ru.practicum.shareit.user.User;
 import java.util.List;
 
 public interface ItemStorage extends JpaRepository<Item, Long> {
-    Page<Item> findByUser(User user, Pageable page);
+    Page<Item> findByUserOrderById(User user, Pageable page);
 
     @Query("select it " +
             "from Item as it " +

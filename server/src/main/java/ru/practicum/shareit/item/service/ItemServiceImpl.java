@@ -126,7 +126,7 @@ public class ItemServiceImpl implements ItemService {
         User user = UserMapper.toUser(userService.get(userId));
         List<ItemBookingDto> itemDtos = new ArrayList<>();
         Pageable page = PageRequest.of(from / size, size);
-        Page<Item> items = itemStorage.findByUser(user, page);
+        Page<Item> items = itemStorage.findByUserOrderById(user, page);
 
         for (Item item : items) {
             List<Booking> bookings = bookingStorage.findByItemAndItemUserAndStatusOrderByStartAsc(
