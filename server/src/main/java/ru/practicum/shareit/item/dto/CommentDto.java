@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Data
@@ -14,12 +12,7 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CommentDto {
     Long id;
-
-    @NotBlank(message = "Comment with empty text")
-    @NotNull(message = "Comment with empty text")
     String text;
-
     String authorName;
-
     LocalDateTime created;
 }

@@ -2,15 +2,12 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemBookingDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 /**
@@ -20,7 +17,6 @@ import java.util.List;
 @RequestMapping("/items")
 @RequiredArgsConstructor
 @Slf4j
-@Validated
 public class ItemController {
     public final ItemService itemService;
 
@@ -32,13 +28,13 @@ public class ItemController {
 
     @PostMapping
     public ItemDto add(@RequestHeader("X-Sharer-User-Id") Long userId,
-                       @Validated(ItemDto.New.class) @RequestBody ItemDto itemDto) {
+                       @RequestBody ItemDto itemDto) {
         return itemService.add(userId, itemDto);
     }
 
     @PatchMapping("/{itemId}")
     public ItemDto update(@RequestHeader("X-Sharer-User-Id") Long userId,
-                          @Validated(ItemDto.UpdateFields.class) @RequestBody ItemDto itemDto,
+                          @RequestBody ItemDto itemDto,
                           @PathVariable long itemId) {
         log.info("User with id = {} trying to update item with id = {}", itemId, userId);
         itemDto.setId(itemId);
@@ -47,27 +43,25 @@ public class ItemController {
 
     @GetMapping
     public List<ItemBookingDto> findByUserId(@RequestHeader("X-Sharer-User-Id") long userId,
-                                             @RequestParam(defaultValue = "0", required = false) @PositiveOrZero int from,
-                                             @RequestParam(defaultValue = "25", required = false) @Positive int size) {
+                                             @RequestParam(defaultValue = "0", required = false) int from,
+                                             @RequestParam(defaultValue = "25", required = false) int size) {
         log.info("User with id = {} trying to fetch item list", userId);
         return itemService.findByUserId(userId, from, size);
     }
 
     @GetMapping("/search")
     public List<ItemDto> search(@RequestParam(name = "text") String term,
-                                @RequestParam(defaultValue = "0", required = false) @PositiveOrZero int from,
-                                @RequestParam(defaultValue = "25", required = false) @Positive int size) {
+                                @RequestParam(defaultValue = "0", required = false) int from,
+                                @RequestParam(defaultValue = "25", required = false) int size) {
         log.info("User trying to search items by term \"{}\"", term);
         return itemService.search(term, from, size);
     }
 
     @PostMapping("/{itemId}/comment")
     public CommentDto addCommant(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                 @Validated @RequestBody CommentDto commentDto,
+                                 @RequestBody CommentDto commentDto,
                                  @PathVariable long itemId) {
         log.info("User trying to post comment to item with с id = {}", itemId);
         return itemService.addComment(userId, itemId, commentDto);
     }
 }
-
-
